@@ -1,6 +1,8 @@
-# Abstrakte Datatyper
+# Algmet Kokebok
 
-## Vector
+## Abstrakte Datatyper
+
+### Vector
 
 ``` c++
 template <typename T>
@@ -156,7 +158,7 @@ public:
 }
 ```
 
-## Stack
+### Stack
 
 ``` c++
 template <typename T>                //  'T': fleksibel datatype!
@@ -207,7 +209,7 @@ class Stack {
 };
 ```
 
-## Queue
+### Queue
 
 ``` c++
 template <typename T>                //  'T': fleksibel datatype!
@@ -271,7 +273,7 @@ class Queue {
 };
 ```
 
-## List
+### List
 
 ``` c++
 template <typename T> // 'T': fleksibel datatype!
@@ -378,3 +380,265 @@ class List {
 };
 ```
 
+
+## Infix til Postfix
+
+Infix er uttrykk som er skrevet på måten:
+(( 8 + 12 ) * ( 17 + 4 ))
+
+Postfix er uttrykk som er skrevet på måten:
+8 12 + 17 4 + *
+### Algoritme
+1. Pusher alle operatorer '+' og '\*' på stacken
+2. skriver rett ut igjenn sifre/tall
+3. pop'er og skriver operator når vi finner en ')' sluttparantes.
+4. ignorerer alle '(' startparantes.
+### Kode
+``` c++
+while ((tegn = cin.get()) != '\n'){ //leser alle tall og tegn fram til \n
+	if(tegn == ')'){ //hvis den finner sluttparantes
+		cout << stakk.top(); // skriver stackens øverste tegn
+		stakk.pop            // fjerner tegnet
+	}
+
+		//hvis den finenr + || *, legges det til på stacken
+	else if (tegn == '+' || tegn == '*') stakk.push(tegn);
+
+	while (tegn >= '0' && tegn <= '9'){
+		cout << tegn;
+		tegn = cin.get();
+	}
+
+	if (tegn != '(')
+		cout << ' ';
+}
+```
+
+
+## Postfix til svar
+
+regner ut postfix uttrykk som: 8 12 + 17 4 + \* = 420 ved bruk av stacken
+### Algoritme
+1. Når du finner '+' eller '\*' pop'es to tall/operander
+2. Deres sum/produkt beregnes
+3. svaret pushes til stack
+4. Når man finner sifre, bygger dette evt. tile et sammenhengende tall, og pushes på stack
+
+### Kode
+``` c++
+while ((tegn = cin.get()) != '\n'){ // leser alt fram til \n
+	tall = 0;                       // nullstiller
+	while (tegn == ' ') tegn = cin.get(); //skipper blanke
+
+		// hvis vi leser '+' eller '*' tar vi de to øverste tallene og gjør
+		// tilsvarende operator på de
+	if (tegn == '+'){
+		tall = stakk.top(); stakk.pop(); //tall = øverste tallet på stakken
+		tall += stakk.top(); stakk.pop(); // plusser på det nye tallet som nå er på toppen
+	} else if (tegn == '*'){
+		tall = stakk.top(); stakk.pop();
+		tall *= stakk.top(); stakk.pop();
+	}
+
+		// bygger flersiffret tall
+	while (tegn >= '0' && tegn <= '9'){
+		tall = (10 * tall) + (tegn - '0'); //omgjør fra ascii til tall
+		tegn = cin.get();
+	}
+
+	stakk.push(tall); //pusher oppbygde tall
+}
+```
+
+
+## Parse Tre
+
+Man kan bygge et parse-tre fra et postfix uttrykk.
+Ett parse-tre er et binært tre hvor bladnodene har tall, og alle interne noder har operatorerne '+' eller '\*'
+F.eks.
+3 4 + 3 2 * + 2 + 5 3 * 4 2 + * +
+gir parse treet:
+![[Pasted image 20231204153618.png]]
+### Algoritme
+1. Leser ett og ett tegn (bokstav/siffer, '+' eller '\*')
+2. Er det bokstav / siffer, pushes den til stakken
+3. er det '+' eller '\*', pop'es av stakken det som blir høyre og venstre noder, så blir rotnoden pushet på stacken.
+
+**NB:**
+- postfix uttrykket må bestå av kun **EN** bokstav / **ETT** siffer, '+' og '\*'
+- Uttrykket kan ikke avsluttes med en eller flere blanke
+
+### Kode
+``` c++
+struct Node{
+	char ID;
+	Node *left, *right;
+	Node(char id){
+		ID = id;
+		left = right = nullptr;
+	}
+}
+```
+
+``` c++
+while ((tegn = cin.get()) != '\n'){
+	while(tegn == ' ') tegn = cin.get();
+	nyNode = new Node(tegn);
+	if (tegn == '+' || tegn == '*'){
+		nyNode->right = stakk.top(); stakk.pop();
+		nyNode->left = stakk.top(); stakk.pop();
+	}
+	stakk.push(nyNode);
+}
+```
+
+
+## TreTraversering
+
+### Node
+``` c++
+struct Node {
+	char ID;
+	bool besokt; // 'besokt' brukes KUN ifm. postorder.
+	Node *left, *right; // Initierende constructor:
+	Node(char id) { ID = id; left = right = nullptr; besokt = false; }
+};
+```
+
+### Preorder
+
+#### Algoritme
+Besøker seg selv før den traverserer.
+1. Besøk seg selv
+2. Traverser Venstre
+3. Traverser Høyre
+#### Kode
+``` c++
+void traverserPreorder(Node* node){
+	if(node){
+		gStakk.push(node);
+		while (!gStakk.empty()){
+			node = gStakk.top(); gStakk.pop();
+			besok(node);
+			if (node->right) gStakk.push(node->right);
+			if (node->left) gStakk.push(node->left);
+		}
+	}
+}
+```
+
+### Inorder
+#### Algoritme
+Besøker seg selv 'mellom' traverseringen
+1. Traverser Venstre
+2. Besøk seg selv
+3. Traverser Høyre
+#### Kode
+``` c++
+void traverserInorder(Node* node){
+	while (node || !gStakk.empty()){  //sjekke om reel node eller noe på stakk
+		if (node) { // reel node
+			gStakk.push(node); //noden legges på stakken
+			node = node->left // går til venstre
+		} else{ //node = nullprt
+			node = gStakk.top(); gStakk.pop(); // poper en node
+			besok(node); // besøker den
+			node = node->right; // går til høyre
+		}
+	}
+}
+```
+
+### Postorder
+
+#### Algoritme
+Besøker seg selv etter traversering
+1. Traverser Venstre
+2. Traverser Høyre
+3. Besøk seg selv
+
+if left != nullptr && node->left->besokt = false
+
+``` c++
+void traverserPostorder (Node* node) {
+	if (node) {
+		gStakk.push(node);
+		while (!gStakk.empty()){
+			node = gStakk.top(); gStakk.pop();
+			if (node->left->besokt = false) {
+				gStakk.push(node->left);
+			}
+			if (node->right->besokt = flase) {
+				gStakk.push(node->right);
+			}
+			besok(node);
+		}
+	}
+}
+```
+### Levelorder
+#### Algoritme
+1. Leser treet linjevis
+#### Kode
+``` c++
+void traverserLevelorder(Node* node){
+	if (node){
+		gKo.push(node); // legger rota i køen
+		while (!gKo.empty()){
+			node = gKo.front(); gKo.pop(); //tar ut første node
+			besok(node); // besøker den
+			if(node->left) gKo.push(node->left); // leger til evt venstre og høyre
+			if(node->right) gKo.push(node->right); //bakerst på køen
+		}
+	}
+}
+```
+
+## Rekursjon
+- Brukes når et problem kan deles i mindre, enklere under-deler
+- Hvert underproblem kan løses ved å anvende samme teknikk
+- Hele problemet løses ved å kombinere løsningene på underproblemene
+
+**Rekusjon:** en funksjon som blant annet kaller/bruker seg selv, og ha en stoppe-betingelse som stopper den fra å kalle seg selv.
+
+### Preorder Rekursiv
+``` c++
+void traverserPreorder (Node* node) {
+	if (node) {
+		gNivaa++;
+		besok(node);
+		traverserPreorder(node->left);
+		traverserPreorder(node->right);
+		gNivaa--;
+	}
+}
+```
+
+### Inorder Rekursiv
+``` c++
+void traverserInorder (Node* node) {
+	if (node) {
+		gNivaa++;
+		traverserInorder(node->left);
+		besok(node);
+		traverserInorder(node->right);
+		gNivaa--;
+	}
+}
+```
+
+### Postorder Rekursiv
+``` c++
+void traverserPostorder (Node* node) {
+	if (node) {
+		gNivaa++;
+		traverserPostorder(node->left);
+		traverserPostorder(node->right);
+		besok(node);
+		gNivaa--;
+	}
+}
+```
+
+## Permutering
+Plassombytting  / annen rekkefølge
