@@ -380,6 +380,86 @@ class List {
 };
 ```
 
+### Heap
+``` c++
+template <typename T>
+class Heap {
+  private:
+    T* data;
+    int lengde, antall;
+    T sentinelKey;
+
+    void upHeap(int keyNr) {
+        T verdi = data[keyNr];
+        data[0] = sentinelKey;
+        while (data[keyNr/2] < verdi) {
+            data[keyNr] = data[keyNr/2];
+            keyNr = keyNr/2;
+        }
+        data[keyNr] = verdi;
+    }
+
+  public:
+    Heap(const int len = 200) {
+        data = new T[len]; lengde = len; antall = 0;
+        sentinelKey = std::numeric_limits<T>::max();
+    }
+
+    ~Heap() { delete [] data; }
+
+    void change(const int keyNr, const T nyVerdi) {
+    }
+
+    void display() const {
+        for (int i = 1; i <= antall; i++) std::cout << ' ' << data[i];
+    }
+
+    void downHeap(T arr[], const int ant, int keyNr) {
+        int j;
+        T verdi = arr[keyNr];
+        while (keyNr <= ant/2) {
+            j = 2 * keyNr;
+            if (j < ant && arr[j] < arr[j+1]) j++;
+            if (verdi >= arr[j])
+               break;
+            arr[keyNr] = arr[j];
+            keyNr = j;
+        }
+        arr[keyNr] = verdi;
+    }
+
+    void extract(const int keyNr) {
+    }
+
+    void insert(const T verdi) {
+        if (antall < lengde - 1) {
+            data[++antall] = verdi;
+            upHeap(antall);
+        } else
+            std::cout << "\nHeapen er full med " << lengde
+                      << " elementer (inkl. sentinel key)!\n\n";
+    }
+
+    T remove() {
+        if (antall > 0) {
+            T verdi = data[1];
+            data[1] = data[antall--];
+            downHeap(data, antall, 1);
+            return verdi;
+        } else {
+            std::cout << "\nHeapen er helt tom - ingenting i 'remove'!\n\n";
+            return sentinelKey;
+        }
+    }
+
+    T replace(const T verdi) {
+        data[0] = verdi;
+        downHeap(data, antall, 0);
+        return data[0];
+    }
+};
+
+```
 
 ## Infix til Postfix
 
@@ -640,5 +720,198 @@ void traverserPostorder (Node* node) {
 }
 ```
 
-## Permutering
-Plassombytting  / annen rekkefølge
+## Sortering
+
+### Selection Sort
+#### Algoritme
+1. Finner det minste elementet i resten av arrayen (f.o.m. nr 'i')
+2. Legger det på plass nr 'i'
+#### Orden
+(N\*N)/2
+**NB:**
+- Er linær når verdiene som sammenlignes er små, og tilhørende data er store/mye.
+- Ikke stabil: rekkefølgen på like elementer har ikke samme innbyrdes rekkefølge etter sortering.
+#### Kode
+``` c++
+/**
+* @param arr - Arrayen som skal sorteres
+* @param n   - Antall elementer i arrayen som skal sorteres
+* @see   bytt()
+*/
+void selectionSort (int arr[], const int n) {
+	int i, j,        // løkkevariabler
+		minIndeks;   // indeks for den minste verdien
+
+	for (i=0; i < n-1; i++) { // går til neste element
+		minIndeks = i;        // initieres til første av de gjenværende
+		for (j = i+1; j < n; j++) // finner minste etter nr.'i'
+			if (arr[j] < arr[minIndeks]) minIndeks = j;
+		bytt(arr[minIndeks], arr[i]); // bytter om på verdiene
+	}
+}
+```
+
+### Insertion Sort
+#### Algoritme
+1. Start i indeks 1 og gå videre ut i arrayet
+2. For hver iterasjon, hent verdien til arr\[i]
+3. Sammenlign arr\[i] med den sorterte delen av arrayet
+	1. hvis et større element finnes, forskyv det en til plass til høyre
+4. Sett inn nøkkelen i posisjonen (sorterte delen) hvor alle elementer til venstre er mindre eller lik, og alle elementer til høre er større eller lik
+5. Repeat
+#### Orden
+~(N\*N)/4
+**NB:**
+- Er nærmest linær for så godt som ferdig sorterte arrayer.
+- Veldig kjapp når et stort sortert array får flere verdies som legges til bakpå, og skal sorteres inn i arrayet.
+#### Kode
+``` c++
+/**
+* @param arr - arrayen som skal sorteres
+* @param n   - antall elementer i array n
+*/
+void insertionSort (int arr[], const int n) {
+	int i, j,    // Løkkevariabler
+		verdi;   // Verdien som skal sorteres inn
+
+	for (i = 2; i < n; i++) { // starter i andre elementet
+		verdi = arr[i];       // henter verdi som skal sorteres
+		j = i;                // initierer aktuelt element
+		while (arr[j-1] > verdi){ // så lenge tidligere er søtrre
+			arr[j] = arr[j-1];
+			j--;
+		}
+		arr[j] = verdi; // plaserer verdi det 'j' stanset
+	}
+}
+```
+
+### Shellsort
+nb:
+- bruker sentinel key
+- Ikke stabil algoritme
+#### Algoritme
+1. Start med en predefinert størrelse 'gap'
+2. Sammenlign element 'n', med element 'n+gap'
+3. hvis element n > n+gap, så bytter elementene plass
+4. Når alle elementene har blitt sammenlignet, halver størrelsen på 'gap'
+5. Gjenta til gap = 1.
+6. Kjør en vanlig insertion sort.
+#### Orden
+gjør aldri mer enn N^(3/2) sammenligninger.
+#### Kode
+``` c++
+/**
+* @param arr - Arrayen som skal sorteres
+* @param n   - antall elementer i array arr
+*/
+void shellSort(char arr[], const int n) {
+	int i, j, h; // løkkevariabler
+	char verdi;  // verdien/elementet som evt. skal flyttes bakover i subarrayen.
+
+	for (h = 1; h <= n/9; h = (3*h)+1) ; // initierer h basert på hvor lang arrayen er
+
+	while (h > 0) {
+		for (i = h+1; i < n; i++) {
+			verdi = arr[i];
+			j = i;
+
+			while (j > h && arr[j-h] > verdi) {
+				arr[j] = arr[j-h];
+				j -= h;
+			}
+			arr[j] = verdi;
+		}
+
+		h /= 3;
+	}
+	
+}
+```
+
+### Quicksort
+Prinsipp: Splitt og hersk.
+- Splitt i to, og sorter hver del
+#### Algoritme
+1. Velg arr\[hoyre] som et tilfeldig element å sortere ut fra. (partisjonselementet)
+2. Lete fra venstre etter >= verdi, og fra høyre etter <= verdi og så bytte om på disse
+3. Gjenta til letingen har passert hverandre.
+4. Bytt partisjonselementet med den helt til høyre i venstre delarray (nå er partisjonselementet i arr\[i] på sin endelige plass, og alle elementer til venstre er <= partisjonselementet, og alle elementer til høyre er >= partisjonselementet).
+5. Gjenta rekursivt.
+#### Orden
+Quicksort bruker i gjennomsnitt `2N ln N` sammenligninger, worst case `(N*N)/2`
+#### Kode
+##### QuickSort
+``` c++
+/**
+* @param arr     - arrayen som skal sorteres
+* @param venstre - venstre indeks for sorteringsintervall
+* @param hoyre   - høyre indeks for sorteringsintervall
+*/
+void quickSort (char arr[], const int venstre, const int hoyre) {
+	if (hoyre > venstre) {
+		int indeks = partisjoner(arr, venstre, hoyre);
+		quickSort(arr, venstre, indeks-1);
+		quickSort(arr, indeks+1, hoyre);
+	}
+}
+```
+##### Partisjoner
+``` c++
+/**
+* @param arr     - Arrayen som skal partisjoneres
+* @param venstre - venstre indeks for partisjonering
+* @param hoyre   - høyre indeks for partisjonering
+* @return        - Indeksen der partisjonselementet havnet / ble plassert
+*/
+int partisjoner(char arr[], const int venstre, const int hoyre) {
+	if (hoyre > venstre) {
+		int i, j; //indeksene som går mot hverandre
+		char partisjonsElement;
+
+		partisjonsElement = arr[hoyre];
+		i = venstre-1;
+		j = hoyre;
+
+		while (true) {
+			while (arr[++i] < partisjonsElement) ;
+			while (arr[--j] > partisjonsElement) ;
+
+			if (i >= j) break; //indeksene har passert hverandre
+			bytt(arr[i], arr[hoyre]); // bytter innholdet i skuffene
+
+			return i; // hvor partisjonselementet havnet
+		}
+		return 0; //mindre enn 2 elementer "dummy verdi"
+	}
+}
+```
+### Heapsort
+#### Algoritme
+1. Tar en array som skal sorteres og starter halvveis uti, og går baklengs til dens start.
+	1. For hvert element utføres 'downHeap'.
+2. Når man har kommet til første elementet, oppfyller hele den originale arrayen heap-betingelsen.
+3. Bytt det aller første, og til enhver tid siste elementet, og utfører 'downHeap' for hver gang.
+	1. Teller stadig ned antall elementer i arrayen som er igjenn å sortere.
+#### Orden
+bruker færre enn `2N lg N` sammenligninger (selv i 'Worst Case').
+#### NB:
+- Bottom-up heap-konstruksjon er tidslinær.
+- Ustabil
+#### Kode
+``` c++
+/**
+* @param arr - arrayen som skal sorteres
+* @param n - antall elementer initierlt i arr
+* @see - heap.downHeap()
+*/
+void heapSort(unsigned char arr[], int n) {
+	for (int keyNr = n/2; keyNr >= 1; keyNr--) // arrayen blir til en heap
+		gHeap.downHeap(arr, n, keyNr);
+
+	while (n > 1) { // fortsatt igjen å sortere
+		bytt <unsigned char> (arr[1], arr[n]);
+		gHeap.downHeap(arr, --n, 1);
+	}
+}
+```
