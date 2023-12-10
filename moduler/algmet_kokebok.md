@@ -381,6 +381,45 @@ class List {
 ```
 
 ### Heap
+#### Beskrivelse
+En binary heap kan skrives som et komplett binært tre, hvor hver node sin verdi er mindre eller lik barna sine. Siden heapen skal være som et komplett binært tre, legger vi hele tiden på neste node på laveste nivå i treet, fra venstre mot høyre.
+Siden treet skal være komplett, kan vi implementere heapen som et array, og bruke følgende metoder for å finne barna og foreldre nodene til en gitt node
+```
+leftChild:  2 * index +1
+rightChild: 2 * index +2
+parent:     (index - 1) / 2
+	NB: Vi runder hele tiden ned for parent-node
+
+hvor index = indexen til en gitt node i arrayet
+```
+
+#### UpHeap
+Når vi legger til et element i Heapen, legger vi det hele tiden på neste ledige plass (som beskrevet ovenfor), deretter sammenligner vi verdien til den nye noden, med verdien til foreldre noden. Hvis verdien er mindre enn foreldre-noden, bytter nodene plass. Gjenta til noden er på korrekt plass.
+
+#### DownHeap
+Når vi erstatter verdien i rot noden med en ny verdi, er det ikke sikker at den nye verdien / noden er på riktig plass, derfor kaller vi DownHeap. Downheap sjekker om verdien til noden, er større enn sine barn, hvis noden er større ett av sine barn, bytter vi de to nodene (hvis noden er større en begge sine barn, bytter vi den med den av sine barn som har lavest verdi). Gjenta dette til noden er på sin korrekte plass (den er ikke mindre enn noen av sine barn).
+
+#### Eksempel
+| index | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| verdi | 2 | 4 | 8 | 9 | 7 | 10 | 9 | 15 | 20 | 13 |
+
+```
+Barna til index 2 ('node' 8):
+	2 * 2 + 1 = 5
+	2 * 2 + 2 = 6
+
+forelder til index 2 ('node' 8):
+	(2 - 1) / 2 = 1/2 -> index 0
+
+Barna til index 4 ('node' 7):
+	2 * 4 + 1 = 9
+	2 * 4 + 2 = 10
+
+Forelder til index 4 ('node' 7):
+	(4 - 1) / 2 = 3/2 -> index 1
+```
+
 ``` c++
 template <typename T>
 class Heap {
@@ -461,6 +500,122 @@ class Heap {
 
 ```
 
+### Binært Søketre
+#### Orden
+- Search / insert: 2 ln N (gjennomsnitt)
+- worst case: N sammenligninger.
+#### NB
+- I et binært søketre er ALT til venstre for en node ALLTID mindre enn verdien i selve noden, og ALT til høyre er større eller lik
+``` c++
+template <typename Data, typename MerData>
+class BST {
+  private:
+      struct Node {
+          Data data;
+          MerData merData;
+          Node* left, * right;
+
+          Node(const Data d, const MerData md)  {  data = d;  merData = md;
+                                                   left = right = nullptr;  }
+      };
+
+      Node*  hode; // dummy node hvor hode->right er roten på søketreet
+
+      void traverserInorder(Node* node) const {
+          if (node) {
+             traverserInorder(node->left);
+             cout << '\t' << node->data;
+                   if (node->left)
+                           cout << "    V.barn: " << node->left->data;
+                   if (node->right)
+                           cout << "    H.barn:    " << node->right->data;
+             cout << '\n';
+             traverserInorder(node->right);
+          }
+      }
+
+  public:
+     BST() {
+       hode = new Node(Data(), MerData());
+     }
+
+     ~BST()  {}
+
+     void display() const {
+        traverserInorder(hode->right);
+    }
+
+     void insert(const Data verdi, const MerData merData) {
+       Node * mor = hode,
+            * node = hode->right;
+
+       if (node) {
+          while (node) {
+             mor = node;
+             node = (verdi < node->data) ? node->left : node->right;
+          }
+          node = new Node(verdi, merData);
+          if (verdi < mor->data)  mor->left = node;
+          else mor->right = node;
+       } else
+          hode->right = new Node(verdi, merData);
+     }
+
+     bool remove(const Data verdi) {
+       Node *morFjernes,
+            *fjernes,
+            *morEtterfolger,
+            *etterfolger;
+
+       morFjernes = hode;
+       fjernes = hode->right;
+
+       while (fjernes  &&  verdi != fjernes->data) {
+           morFjernes = fjernes;
+           fjernes = (verdi < fjernes->data) ? fjernes->left : fjernes->right;
+       }
+
+       if (!fjernes)  return false;
+
+       etterfolger = fjernes;
+       if (!fjernes->right)
+          etterfolger = etterfolger->left;
+       else if (!fjernes->right->left) {
+          etterfolger = etterfolger->right;
+          etterfolger->left = fjernes->left;
+       }
+       else {
+          morEtterfolger = etterfolger->right;
+
+          while (morEtterfolger->left->left)
+              morEtterfolger = morEtterfolger->left;
+
+          etterfolger = morEtterfolger->left;
+          morEtterfolger->left = etterfolger->right;
+
+          etterfolger->left = fjernes->left;
+          etterfolger->right = fjernes->right;
+       }
+
+       delete fjernes;
+
+       if (verdi < morFjernes->data) morFjernes->left = etterfolger;
+       else morFjernes->right = etterfolger;
+
+       return true;
+     }
+
+     MerData search(const Data verdi) const {
+         Node* node = hode->right;
+        while (node  &&  node->data != verdi)
+              node = (verdi < node->data) ? node->left : node->right;
+
+        if (node) return node->merData;
+        else return hode->merData;
+    }
+};
+
+```
 ## Infix til Postfix
 
 Infix er uttrykk som er skrevet på måten:
@@ -902,8 +1057,8 @@ bruker færre enn `2N lg N` sammenligninger (selv i 'Worst Case').
 ``` c++
 /**
 * @param arr - arrayen som skal sorteres
-* @param n - antall elementer initierlt i arr
-* @see - heap.downHeap()
+* @param n   - antall elementer initierlt i arr
+* @see       - heap.downHeap()
 */
 void heapSort(unsigned char arr[], int n) {
 	for (int keyNr = n/2; keyNr >= 1; keyNr--) // arrayen blir til en heap
@@ -915,3 +1070,148 @@ void heapSort(unsigned char arr[], int n) {
 	}
 }
 ```
+
+## Hashing
+### Separate Chaining
+Det brukes en array/vector med Stacker eller LIFO-lister. Når en nøkkel hashes til en indeks
+i arrayen/vectoren, så settes den bare inn aller først i stacken/listen. Er det derfor N nøkler
+som skal hashes inn i en array/vector som er M lang, så vil det gjennomsnittlig være N/M
+elementer/nøkler i hver stack/liste. Greit å bruke denne metoden når N er så stor at det er lite
+hensiktsmessig i bruke en array/vector der det er plass til alle nøklene/elementene.
+
+### Linear Probing
+Nøkkelen hashes til indeksen der den bør legges. Er det allerede opptatt der, forsøkes den
+lagt inn i første etterfølgende ledige indeks. Når man arrayens slutt, så startes det med leting
+forfra igjen. Er arrayens lengde satt stor nok, så er vi garantert å finne en ledig plass!
+
+### Double Hashing
+Den store ulempen med Linear Probing er «clustering». Dvs. sammenklumping av nøkler som
+har blitt hashet til omtrent de samme indeksene. Dette kan forbedres ved at når en krasj
+oppstår, så letes det ikke bare i en og en fortløpende indeks etterpå. I stedet får de ulike
+nøklene litt forskjellige tilleggsverdier som det sjekkes om vedkommende indeks er ledig i
+stedet. F.eks. at en nøkkel sjekker hver andre indeks utover, mens en annen sjekker hver
+sjette. Nøklene får ulike tilleggsverdier ved å kjøre den også igjennom en annen hash-
+funksjon. Denne kan f.eks. være: 6 - (nøkkel % 6) - som altså blir et tall i intervallet 1 til 6
+
+### Kode
+``` c++
+enum HashType { LinearProbing, DoubleHashing };
+
+class Hashing {
+  private:
+      char* tabell;
+      int   lengde;
+      HashType hType;
+
+      int hash1(const int modVerdi, const int kVerdi) {
+          return (kVerdi % modVerdi);
+      }
+
+      int hash2(const int hashVerdi, const int kVerdi) {
+          return (hashVerdi - (kVerdi % hashVerdi));
+      }
+
+      int kVerdi(char bokstav) {
+          bokstav = toupper(bokstav);
+          if (bokstav >= 'A'  &&  bokstav <= 'Z')
+              return (static_cast <int> (bokstav - 'A') + 1);
+          else  return 0;
+      }
+
+  public:
+      Hashing(const HashType hT, const int len) { // constructor
+          lengde = len;    hType = hT;
+          tabell = new char[len];
+          for (int i = 0; i < lengde; i++)  tabell[i] = '-';
+      }
+
+      ~Hashing()  {  delete []  tabell;  } // destructor
+
+      void display() const { // displayer hash-tabeller
+          for (int i = 0; i < lengde; i++)         
+              cout << setw(3) << i << ':';            cout << '\n';
+          for (int i = 0; i < lengde; i++) 
+              cout << "  " << tabell[i] << ' ';       cout << "\n\n";
+      }
+
+      void insert(const int hashVerdi, const char data) { // inserter data
+          int dataTilK = kVerdi(data);
+          int indeks   = hash1(lengde,    dataTilK); // finner hash-verdiene
+          int tillegg  = hash2(hashVerdi, dataTilK); // denne brukes bare til Double
+
+          while (tabell[indeks] != '-') {  
+		          // sjekker om den skal utføre linear probing eller double hashing
+              indeks = (hType == LinearProbing) ? (indeks+1) : (indeks+tillegg);
+              indeks %= lengde; // wrapper tilbake til start hvis index er Out of
+					            // bounds
+          }                              
+          tabell[indeks] = data;         display(); // plasserer verdien når den
+											        // kommer til en tom skuff.
+      }
+};
+```
+### Merkle Tree
+#### Beskrivelse
+Et merkle tre er et binært tre sammensatt av hash-verdier.
+##### Struktur
+- **Blad-noder:**
+	- Inneholder en Hash av en datablokk (datablokken er ikke en del av merkle treet).
+- **Intermediate-noder:**
+	- Inneholder en hash av sine 2 barn-noder (hash-barn1+hash-barn2, hashet).
+- **Rot-node:**
+	- Representerer en hash av alle underliggende data, og endres for hver gang noen av de underliggende dataene endres.
+		- Dette gjør den sensitiv til dataendring.
+
+## Søking
+### Sekvensielt søk i usortert array
+#### Orden
+- N+1 sammenligninger ALLTID ved ikke-funn
+- N/2 sammenligninger gjennomsnittlig ved funn
+#### Kode
+``` c++
+/**
+* Søker sekvensiellt gjennom arrayet til den finner en index med medsendt verdi.
+*
+* @param arr   - usortert array som skal søkes i
+* @param verdi - verdien som skal letes etter
+* @param n     - antall elementer i arr
+* @return      indeksen i 'arr' der 'verdi' ble funnet
+*/
+int sokSekvensielt (const int arr[], const int verdi, const int n) {
+	int indeks = n+1;
+
+	while (index > 0 && verdi != arr[index--]) ;
+	return (index);
+}
+```
+
+### Binært søk i en sortert array
+#### Orden
+- Ikke mer enn lgN +1 sammenligninger for søk som gir både funn og ikke-funn.
+#### Kode
+``` c++
+/**
+* @param arr   - sortert array det skal søkes i
+* @param verdi - verdien det skal søkes etter
+* @param n     - antall elementer i 'arr'
+* @return      - indeksen hvor 'verdi' ble funnet i 'arr'
+*/
+int sokBinært (const inst arr[], const int verdi, const int n) {
+	int venstre = 1,
+		hoyre = n,
+		midten;
+
+	while (venstre <= hoyre) {
+		midten = (venstre + hoyre) / 2;
+
+		if (verdi == arr[midten])
+			return midten;
+
+		if (verdi < arr[midten])
+			hoyre = midten - 1;
+		else venstre = midten + 1;
+	}
+}
+```
+
+### DFS - Dybde Først Søk
