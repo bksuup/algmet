@@ -1215,3 +1215,140 @@ int sokBinært (const inst arr[], const int verdi, const int n) {
 ```
 
 ### DFS - Dybde Først Søk
+#### Kode
+Sjekker rekursivt om en nodes naboer er besøkt eller ikke, og markerer noden som besøkt når den besøkes av DFS funksjonen
+```c++
+/**
+* @param nr - indeks (0 til ANTNODER-1) for noden som skal besøkes
+*/
+void DFS(const int nr) {
+    gBesokt[nr] = ++gBesoktSomNr; // gir noden riktig "besøkt som" nr
+    
+    for (int j = 0;  j < ANTNODER;  j++) // sjekker hele "linjen" til noden i en nabo-matrise
+        if (gNaboMatrise[nr][j]) // hvis forskjellig fra 0
+            if (gBesokt[j] == USETT) DFS(j); // rekursivt besøk noden.
+}
+```
+
+### Bredde først søk
+#### Kode
+Iterativ algoritme som gjør et bredde først søk.
+``` c++
+/**
+ *  @param   nr  - Indeks (0 til ANTNODER-1) for STARTNODEN i bes�ket
+ */
+ void BFS(int nr) {
+    int j;                                     //  Indeks for aktuelle naboer.
+    gBesokeSenere.push(nr);                    //  Legges BAKERST i besøkskø.
+    while (!gBesokeSenere.empty()) {           //  Ennå noder å besøke igjen:
+        nr = gBesokeSenere.front();            //  AVLES iden til første noden på køen
+        gBesokeSenere.pop();                   //  FJERNER/TAR UT fra køen.
+        gBesokt[nr] = ++gBesoktSomNr;          //  Setter besøksnummeret.
+        for (j = 0;  j < ANTNODER;  j++)       //  Nodens linje i matrisen:
+            if (gNaboMatrise[nr][j])           //  Er nabo med nr.j,
+                if (gBesokt[j] == USETT) {     //    og denne er ubesøkt:
+                    gBesokeSenere.push(j);     //  Legger nabo BAKERST i køen.
+                    gBesokt[j] = SENERE;       //  Setter at delvis besøkt!!!
+                }
+    }
+}
+```
+### Minimum Spenn Tre (MST) - Prim
+#### Algoritme
+1. Noden er endten
+	1. I det hittil oppbygde MST
+	2. på Fringen
+	3. Usett
+2. Finner man en node som allerede er på Fringen
+	1. Sjekk om den skal oppdateres med enda lavere vekt
+3. 'gTilknyttning\[k]' er noden som sørget for at noden 'k':
+	1. Ble flyttet fra Fringen til grafen
+	2. Fikk sin minimale verdi (vekt) på Fringen hittil
+4. 'gKantvekt\[k]' er vekten på kanten mellom 'k' og 'gTilknyttning\[k]'.
+5. Noder på Fringen er (i 'gKantvekt') markert med negativ vekt (USETT = -999)
+
+#### Orden
+(E + V) * log V
+
+#### Kode
+``` c++
+/**
+ *  Finner ETT minimums spenntre for en sammenhengende graf/komponent.
+ *
+ *  @param   nr  -  Grafens startnode, som inni funksjonen brukes/oppdateres
+ *                  til å være aktuell besøkt node
+ *  @see - fringe.h eksempelkode
+ */
+void finnMST(int nr) {
+   int j,
+       vekt;
+                              //  Noden er ny og har dermed ingen tilknytning:
+   if (gFringe.update(nr, -USETT))  gTilknytning[nr] = 0;
+
+   while (!gFringe.empty())  {  //  Fortsatt ubehandlede noder (på "Fringen"):
+       nr = gFringe.remove();   //  Henter den første noden på fringen.
+       gKantVekt[nr] = -gKantVekt[nr];  //  Omgjør neg. til pos.verdi.
+                                  //  Den hentede er noden uten tilknytning:
+       if (gKantVekt[nr] == -USETT)  gKantVekt[nr] = 0;
+
+       for (j = 1;  j <= ANTNODER;  j++) {       //  Går gjennom alle naboer:
+            vekt = gNaboMatrise[nr][j];          //  Henter kantvekt.
+            if (vekt > 0  &&                     //  Er naboer  og  er på
+                gKantVekt[j] < 0)  {             //    Fringen eller USETT
+                                                 //    (negativ 'gKantVekt'):
+                if (gFringe.update(j, vekt) ) {  //  Ny eller lavere kantvekt:
+                   gKantVekt[j]    = -vekt;      //    Oppdaterer med ny vekt
+                   gTilknytning[j] =  nr;        //    og ny tilknytning.
+               }
+            }
+       }
+   }
+}
+```
+
+### Shortest Path
+#### Algoritme
+Algoritme/virkemåte: "Identisk" til Prim's algoritme, bare at avstanden fra node nr.'i' via node nr.'j' til node nr.'k' er avstanden fra nr.'j' til nr.'k' PLUSS minimumsavstanden fra nr.'i' til nr.'j'.
+#### Kode
+KODEN ER HELT IDENTISK TIL EKS_31_MST.CPP, BARE AT FØR LINJE NR.122 SMETTES FØLGENDE KODELINJE INN (!!!):
+``` c++
+vekt += gKantVekt[nr]
+```
+
+``` c++
+/**
+ *  Finner ETT minimums spenntre for en sammenhengende graf/komponent.
+ *
+ *  @param   nr  -  Grafens startnode, som inni funksjonen brukes/oppdateres
+ *                  til å være aktuell besøkt node
+ *  @see - fringe.h eksempelkode
+ */
+void finnMST(int nr) {
+   int j,
+       vekt;
+                              //  Noden er ny og har dermed ingen tilknytning:
+   if (gFringe.update(nr, -USETT))  gTilknytning[nr] = 0;
+
+   while (!gFringe.empty())  {  //  Fortsatt ubehandlede noder (på "Fringen"):
+       nr = gFringe.remove();   //  Henter den første noden på fringen.
+       gKantVekt[nr] = -gKantVekt[nr];  //  Omgjør neg. til pos.verdi.
+                                  //  Den hentede er noden uten tilknytning:
+       if (gKantVekt[nr] == -USETT)  gKantVekt[nr] = 0;
+
+       for (j = 1;  j <= ANTNODER;  j++) {       //  Går gjennom alle naboer:
+            vekt = gNaboMatrise[nr][j];          //  Henter kantvekt.
+            if (vekt > 0  &&                     //  Er naboer  og  er på
+                gKantVekt[j] < 0)  {             //    Fringen eller USETT
+                                                 //    (negativ 'gKantVekt'):
+                vekt += gKantVekt[nr]; // ny linje
+                if (gFringe.update(j, vekt) ) {  //  Ny eller lavere kantvekt:
+                   gKantVekt[j]    = -vekt;      //    Oppdaterer med ny vekt
+                   gTilknytning[j] =  nr;        //    og ny tilknytning.
+               }
+            }
+       }
+   }
+}
+```
+
+### A Star
