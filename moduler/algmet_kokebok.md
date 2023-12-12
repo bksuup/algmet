@@ -4,7 +4,7 @@
 
 ### Vector
 
-``` c++
+``` cpp
 template <typename T>
 class Vector {
 
@@ -160,7 +160,7 @@ public:
 
 ### Stack
 
-``` c++
+``` cpp
 template <typename T>                //  'T': fleksibel datatype!
 class Stack {
 
@@ -211,7 +211,7 @@ class Stack {
 
 ### Queue
 
-``` c++
+``` cpp
 template <typename T>                //  'T': fleksibel datatype!
 class Queue {
 
@@ -275,7 +275,7 @@ class Queue {
 
 ### List
 
-``` c++
+``` cpp
 template <typename T> // 'T': fleksibel datatype!
 class List {
 	private:
@@ -420,7 +420,7 @@ Forelder til index 4 ('node' 7):
 	(4 - 1) / 2 = 3/2 -> index 1
 ```
 
-``` c++
+``` cpp
 template <typename T>
 class Heap {
   private:
@@ -500,13 +500,15 @@ class Heap {
 
 ```
 
+### Fringe
+
 ### Binært Søketre
 #### Orden
 - Search / insert: 2 ln N (gjennomsnitt)
 - worst case: N sammenligninger.
 #### NB
 - I et binært søketre er ALT til venstre for en node ALLTID mindre enn verdien i selve noden, og ALT til høyre er større eller lik
-``` c++
+``` cpp
 template <typename Data, typename MerData>
 class BST {
   private:
@@ -629,7 +631,7 @@ Postfix er uttrykk som er skrevet på måten:
 3. pop'er og skriver operator når vi finner en ')' sluttparantes.
 4. ignorerer alle '(' startparantes.
 ### Kode
-``` c++
+``` cpp
 while ((tegn = cin.get()) != '\n'){ //leser alle tall og tegn fram til \n
 	if(tegn == ')'){ //hvis den finner sluttparantes
 		cout << stakk.top(); // skriver stackens øverste tegn
@@ -660,7 +662,7 @@ regner ut postfix uttrykk som: 8 12 + 17 4 + \* = 420 ved bruk av stacken
 4. Når man finner sifre, bygger dette evt. tile et sammenhengende tall, og pushes på stack
 
 ### Kode
-``` c++
+``` cpp
 while ((tegn = cin.get()) != '\n'){ // leser alt fram til \n
 	tall = 0;                       // nullstiller
 	while (tegn == ' ') tegn = cin.get(); //skipper blanke
@@ -704,7 +706,7 @@ gir parse treet:
 - Uttrykket kan ikke avsluttes med en eller flere blanke
 
 ### Kode
-``` c++
+``` cpp
 struct Node{
 	char ID;
 	Node *left, *right;
@@ -715,7 +717,7 @@ struct Node{
 }
 ```
 
-``` c++
+``` cpp
 while ((tegn = cin.get()) != '\n'){
 	while(tegn == ' ') tegn = cin.get();
 	nyNode = new Node(tegn);
@@ -731,7 +733,7 @@ while ((tegn = cin.get()) != '\n'){
 ## TreTraversering
 
 ### Node
-``` c++
+``` cpp
 struct Node {
 	char ID;
 	bool besokt; // 'besokt' brukes KUN ifm. postorder.
@@ -748,7 +750,7 @@ Besøker seg selv før den traverserer.
 2. Traverser Venstre
 3. Traverser Høyre
 #### Kode
-``` c++
+``` cpp
 void traverserPreorder(Node* node){
 	if(node){
 		gStakk.push(node);
@@ -769,7 +771,7 @@ Besøker seg selv 'mellom' traverseringen
 2. Besøk seg selv
 3. Traverser Høyre
 #### Kode
-``` c++
+``` cpp
 void traverserInorder(Node* node){
 	while (node || !gStakk.empty()){  //sjekke om reel node eller noe på stakk
 		if (node) { // reel node
@@ -794,7 +796,7 @@ Besøker seg selv etter traversering
 
 if left != nullptr && node->left->besokt = false
 
-``` c++
+``` cpp
 void traverserPostorder (Node* node) {
 	if (node) {
 		gStakk.push(node);
@@ -815,7 +817,7 @@ void traverserPostorder (Node* node) {
 #### Algoritme
 1. Leser treet linjevis
 #### Kode
-``` c++
+``` cpp
 void traverserLevelorder(Node* node){
 	if (node){
 		gKo.push(node); // legger rota i køen
@@ -837,7 +839,7 @@ void traverserLevelorder(Node* node){
 **Rekusjon:** en funksjon som blant annet kaller/bruker seg selv, og ha en stoppe-betingelse som stopper den fra å kalle seg selv.
 
 ### Preorder Rekursiv
-``` c++
+``` cpp
 void traverserPreorder (Node* node) {
 	if (node) {
 		gNivaa++;
@@ -850,7 +852,7 @@ void traverserPreorder (Node* node) {
 ```
 
 ### Inorder Rekursiv
-``` c++
+``` cpp
 void traverserInorder (Node* node) {
 	if (node) {
 		gNivaa++;
@@ -863,7 +865,7 @@ void traverserInorder (Node* node) {
 ```
 
 ### Postorder Rekursiv
-``` c++
+``` cpp
 void traverserPostorder (Node* node) {
 	if (node) {
 		gNivaa++;
@@ -887,7 +889,7 @@ void traverserPostorder (Node* node) {
 - Er linær når verdiene som sammenlignes er små, og tilhørende data er store/mye.
 - Ikke stabil: rekkefølgen på like elementer har ikke samme innbyrdes rekkefølge etter sortering.
 #### Kode
-``` c++
+``` cpp
 /**
 * @param arr - Arrayen som skal sorteres
 * @param n   - Antall elementer i arrayen som skal sorteres
@@ -920,7 +922,7 @@ void selectionSort (int arr[], const int n) {
 - Er nærmest linær for så godt som ferdig sorterte arrayer.
 - Veldig kjapp når et stort sortert array får flere verdies som legges til bakpå, og skal sorteres inn i arrayet.
 #### Kode
-``` c++
+``` cpp
 /**
 * @param arr - arrayen som skal sorteres
 * @param n   - antall elementer i array n
@@ -955,7 +957,7 @@ nb:
 #### Orden
 gjør aldri mer enn N^(3/2) sammenligninger.
 #### Kode
-``` c++
+``` cpp
 /**
 * @param arr - Arrayen som skal sorteres
 * @param n   - antall elementer i array arr
@@ -997,7 +999,7 @@ Prinsipp: Splitt og hersk.
 Quicksort bruker i gjennomsnitt `2N ln N` sammenligninger, worst case `(N*N)/2`
 #### Kode
 ##### QuickSort
-``` c++
+``` cpp
 /**
 * @param arr     - arrayen som skal sorteres
 * @param venstre - venstre indeks for sorteringsintervall
@@ -1012,7 +1014,7 @@ void quickSort (char arr[], const int venstre, const int hoyre) {
 }
 ```
 ##### Partisjoner
-``` c++
+``` cpp
 /**
 * @param arr     - Arrayen som skal partisjoneres
 * @param venstre - venstre indeks for partisjonering
@@ -1054,7 +1056,7 @@ bruker færre enn `2N lg N` sammenligninger (selv i 'Worst Case').
 - Bottom-up heap-konstruksjon er tidslinær.
 - Ustabil
 #### Kode
-``` c++
+``` cpp
 /**
 * @param arr - arrayen som skal sorteres
 * @param n   - antall elementer initierlt i arr
@@ -1070,6 +1072,8 @@ void heapSort(unsigned char arr[], int n) {
 	}
 }
 ```
+#### Framgangsmåte
+
 
 ## Hashing
 ### Separate Chaining
@@ -1083,7 +1087,10 @@ hensiktsmessig i bruke en array/vector der det er plass til alle nøklene/elemen
 Nøkkelen hashes til indeksen der den bør legges. Er det allerede opptatt der, forsøkes den
 lagt inn i første etterfølgende ledige indeks. Når man arrayens slutt, så startes det med leting
 forfra igjen. Er arrayens lengde satt stor nok, så er vi garantert å finne en ledig plass!
-
+#### Framgangsmåte
+1. Finn hash-verdien for et element
+2. Hvis plassen elementet skal plasseres er ledig -> plasser elementet på den plassen
+	1. Hvis plassen ikke er ledig -> prøv plass+1 til du finner en ledig plass å plassere elementet
 ### Double Hashing
 Den store ulempen med Linear Probing er «clustering». Dvs. sammenklumping av nøkler som
 har blitt hashet til omtrent de samme indeksene. Dette kan forbedres ved at når en krasj
@@ -1092,9 +1099,16 @@ nøklene litt forskjellige tilleggsverdier som det sjekkes om vedkommende indeks
 stedet. F.eks. at en nøkkel sjekker hver andre indeks utover, mens en annen sjekker hver
 sjette. Nøklene får ulike tilleggsverdier ved å kjøre den også igjennom en annen hash-
 funksjon. Denne kan f.eks. være: 6 - (nøkkel % 6) - som altså blir et tall i intervallet 1 til 6
-
+#### Framgangsmåte
+1. Hash elementet / verdien på 2 måter
+	- Den første (hash1) bestemmer hvor vi skal prøve å plassere elementet først
+	- Den andre (hash2) bestemmer hvor stor 'gap' vi skal hoppe for å prøve å plassere elementet hvis skuffen er opptatt.
+2. Sjekk om plassen til det hashede elementet er opptatt eller ikke
+	- Hvis ledig -> plasser elementet i (hash1)
+	- Hvis ikke ledig -> sjekk hash1 + hash2 verdi
+		- Gjenta til vi finner en ledig skuff
 ### Kode
-``` c++
+``` cpp
 enum HashType { LinearProbing, DoubleHashing };
 
 class Hashing {
@@ -1168,7 +1182,7 @@ Et merkle tre er et binært tre sammensatt av hash-verdier.
 - N+1 sammenligninger ALLTID ved ikke-funn
 - N/2 sammenligninger gjennomsnittlig ved funn
 #### Kode
-``` c++
+``` cpp
 /**
 * Søker sekvensiellt gjennom arrayet til den finner en index med medsendt verdi.
 *
@@ -1189,7 +1203,7 @@ int sokSekvensielt (const int arr[], const int verdi, const int n) {
 #### Orden
 - Ikke mer enn lgN +1 sammenligninger for søk som gir både funn og ikke-funn.
 #### Kode
-``` c++
+``` cpp
 /**
 * @param arr   - sortert array det skal søkes i
 * @param verdi - verdien det skal søkes etter
@@ -1217,7 +1231,7 @@ int sokBinært (const inst arr[], const int verdi, const int n) {
 ### DFS - Dybde Først Søk
 #### Kode
 Sjekker rekursivt om en nodes naboer er besøkt eller ikke, og markerer noden som besøkt når den besøkes av DFS funksjonen
-```c++
+```cpp
 /**
 * @param nr - indeks (0 til ANTNODER-1) for noden som skal besøkes
 */
@@ -1229,11 +1243,24 @@ void DFS(const int nr) {
             if (gBesokt[j] == USETT) DFS(j); // rekursivt besøk noden.
 }
 ```
+#### Framgangsmåte
+1. Lag en stack og en besøkt-liste
+
+2. Plasser startnoden på stacken
+
+3. Begynn DFS loopen
+	1. Så lenge stacken ikke er tom
+		1. Pop en node fra stakken (aktuell node)
+		2. besøk den aktuelle noden
+		3. få alle nabo-noder til den aktuelle noden
+		4. for hver nabo-node
+			1. Marker som besøkt
+			2. push på stakken
 
 ### Bredde først søk
 #### Kode
 Iterativ algoritme som gjør et bredde først søk.
-``` c++
+``` cpp
 /**
  *  @param   nr  - Indeks (0 til ANTNODER-1) for STARTNODEN i bes�ket
  */
@@ -1253,6 +1280,23 @@ Iterativ algoritme som gjør et bredde først søk.
     }
 }
 ```
+#### Fremgangsmåte
+1. Lag en kø og en liste over besøkte noder
+	- Køen brukes for å holde orden på hvilken node som skal besøkes neste
+	- listen holder orden på hvilke noder som har blitt besøkt
+
+2. Plasser startnoden på køen og marker den som besøkt
+
+3. BFS Loop
+	- Så lenge køen ikke er tom
+		- hent neste node fra starten på køen (aktuell node)
+		- besøk noden
+		- Se alle noder som er sammenkoblet med den aktuelle noden.
+		- for hver node som er sammenkoblet med den aktuelle noden -> marker den som besøkt, og plasser den på køen
+
+4. Gjenta til køen er tom
+	- Hvis en nabonode er markert besøkt -> ikke besøk noden på nytt igjenn.
+
 ### Minimum Spenn Tre (MST) - Prim
 #### Algoritme
 1. Noden er endten
@@ -1267,11 +1311,20 @@ Iterativ algoritme som gjør et bredde først søk.
 4. 'gKantvekt\[k]' er vekten på kanten mellom 'k' og 'gTilknyttning\[k]'.
 5. Noder på Fringen er (i 'gKantvekt') markert med negativ vekt (USETT = -999)
 
+#### Framgangsmåte
+1. Lag en prioritets-kø hvor nodene er rangert med hensyn på vekten til kanten som forbinder den med det allerede byg MST
+2. Start i en node (startnode)
+3. Så lenge MST ikke inneholder alle noder:
+	1. Se på alle kanter som knytter en node til MST
+	2. velg den kanten med lavest vekt (evt første noden i prioritetskøen)
+	3. legg til denne kanten & noden til MST
+4. Gjenta steg 3 til alle noder er en del av MST.
+
 #### Orden
 (E + V) * log V
 
 #### Kode
-``` c++
+``` cpp
 /**
  *  Finner ETT minimums spenntre for en sammenhengende graf/komponent.
  *
@@ -1306,16 +1359,34 @@ void finnMST(int nr) {
 }
 ```
 
-### Shortest Path
+### Shortest Path - Dijkstra
+#### Framgangsmåte
+1. Start med et sett med ubesøkte noder
+	- initiellt vil dette inneholde alle nodene.
+
+2. Så lenge det er ubesøkte noder
+	- Velg den noden fra ubesøkte noder med lavest distanse fra startnoden.
+		- På starten vil dette være start-noden
+	- For denne noden, se alle nabo-noder
+		- Kalkuler distansen til nabo-nodene med distansen / vekten fra start -> aktuell node + vekten på kanten fra aktuell node -> nabo-node.
+			- hvis den nye distansen er mindre enn nabo-nodens tidligere kalkulerte distanse -> oppdater distansen til denne noden, og hvor hvilken node den kom fra.
+			- Hvis større -> ignorer.
+	- etter alle nabo-noder til den aktuelle noden har blitt sett, marker den aktuelle noden som besøkt. Denne noden vil ikke bli sjekket igjenn.
+
+3. Gjenta til alle noder har blitt besøkt.
+	- På "riktig" måte stopper algoritmen når "slutt" - noden er øverst i prioriterings-køen / har lavest distanse.
+
+4. Start i "slutt" - noden og konstruer stien tilbake til starten ved å se på hvor hver node kommer fra. vekten på stien / lengden fra start til slutt, er summen av vekten på alle kantene i stien.
+
 #### Algoritme
 Algoritme/virkemåte: "Identisk" til Prim's algoritme, bare at avstanden fra node nr.'i' via node nr.'j' til node nr.'k' er avstanden fra nr.'j' til nr.'k' PLUSS minimumsavstanden fra nr.'i' til nr.'j'.
 #### Kode
 KODEN ER HELT IDENTISK TIL EKS_31_MST.CPP, BARE AT FØR LINJE NR.122 SMETTES FØLGENDE KODELINJE INN (!!!):
-``` c++
+``` cpp
 vekt += gKantVekt[nr]
 ```
 
-``` c++
+``` cpp
 /**
  *  Finner ETT minimums spenntre for en sammenhengende graf/komponent.
  *
@@ -1392,7 +1463,7 @@ Tidskompleksiteten avhenger av den heuristikke funksjonen.
 
 
 #### Kode
-``` c++
+``` cpp
 const int STARTRUTE = 208; // definerer hvor i rutenettet vi skal starte fra
 const int USETT = -999; // usette noder / ruter, kan være uansett stort negativt tall
 /**
@@ -1445,7 +1516,7 @@ const int USETT = -999; // usette noder / ruter, kan være uansett stort negativ
  }
 ```
 
-``` c++
+``` cpp
 /**
  *  Beregner "luftlinje-avstanden"
  *      ( = hypotenusen i en trekant, dvs. Euklidsk avstand) mellom to ruter.
@@ -1499,7 +1570,7 @@ Function unionerOgFinn(node1, node2, unioner):
 
 ```
 #### Kode
-``` c++
+``` cpp
 bool unionerOgFinn(int nr1, int nr2, const bool unioner) {
     int i = nr1, j = nr2; // Initialize indices
 
