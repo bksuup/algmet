@@ -1522,3 +1522,43 @@ bool unionerOgFinn(int nr1, int nr2, const bool unioner) {
     return (i == j);
 }
 ```
+For union find med **Weight balancing** og **Path Compression** se eksempel 37.
+
+### Huffman
+#### Framgangsmåte
+1. Samle data og frekvens
+	- Start med en streng, del denne opp i tegn og tell hvor ofte hvert tegn forekommer
+
+2. Lag bladnoder
+	- Lag en bladnode for hvert tegn
+	- hver bladnode inneholder tegnet og frekvensen
+
+3. Lag en prioritetskø
+	- Plasser alle nodene i en prioritets-kø, hvor den noden med lavest frekvens er fremst i køen, og den med høyest frekvens er bakerst i køen.
+
+4. Konstruer Huffman treet.
+	- Så lenge det er mer enn en node i køen:
+		- Fjern de to nodene med lavest frekvens fra køen
+		- Lag en ny "intern" node med disse to nodene som barn, og med frekvensen lik summen av frekvensen til barna
+		- Plasser den nye noden på prioritets-køen.
+	- Den siste noden på prioritets-køen er roten til huffman treet
+
+5. Generer Kode
+	- Traverser treet fra Rot-noden til hver Blad-node og skriv ned "koden" til hvert tegn
+		- for hver venstre-kant -> legg til en 0
+		- for hver høyre-kant    -> legg til en 1
+
+6. Encode dataen
+	- Oversett hvert tegn i strengen med den nye koden fra huffman-kodingen for å få den nye dataen.
+
+7. Decode dataen
+	- følg stiene i huffman treet for å finne strengen.
+		- hver 0 -> gå til venstre barn
+		- hver 1 -> gå til høyre barn
+		- hver bladnode -> skriv tegnet.
+
+#### Kode
+Se eks_39
+
+### N-kompletthet
+Se egen PDF
