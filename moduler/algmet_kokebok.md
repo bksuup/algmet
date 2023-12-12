@@ -1352,3 +1352,173 @@ void finnMST(int nr) {
 ```
 
 ### A Star
+algoritme for å effektivt finne korteste / raskeste vei fra en startnode til en sluttnode.
+A* = Dijkstra + Heuristikk
+#### Heuristikk
+Omhandler å estimere veien / avstanden fra nåværende node / rute og til målet.
+Avstanden til målet (f) er derfor SUMMEN av reell avlagt avstand fra startnoden, PLUSS estimert avstand til målet.
+
+#### Orden
+Tidskompleksiteten avhenger av den heuristikke funksjonen.
+- Beste fall: b * d
+- Gjennomsnitt / verste fall: b^d
+
+#### Framgangsmåte
+1. Initialiser
+- Lag to sett / mengder: 'Open Set' og 'Closed Set'.
+	- Legg til startnoden til 'Open Set'
+
+2. Definer kostnad-funksjonene
+	- g(n): kostnaden fra startnoden til node 'n'.
+	- h(n): Den heuristiske distansen fra node 'n' -> målet
+	- f(n):  estimert totalkostnaden til node 'n' fra start til mål, g(n) + h(n)
+
+3. Hovedfunksjon
+	- Så lenge 'Open Set' ikke er tomt:
+		- Velg den noden i Open Set med lavest f(n) - verdi. kall denne noden 'current'
+		- hvis 'current' er målet, så er du ferdig.
+		- hvis ikke, flytt current fra 'Open Set' -> 'Closed Set'
+
+4. For hver nabo av 'current'
+	- Hvis 'nabo' er i 'Closed Set' -> Ignorer
+	- kalkuler g('nabo') med en sti gjennom 'current'.
+	- hvis 'nabo' ikke er i 'Open Set' -> legg den til
+	- Hvis 'nabo' er i 'Open Set' -> sjekk om g('nabo') er større enn den nodens tidligere g(n) verdi.
+		- Hvis den er lavere -> oppdater g(n) for noden
+		- Hvis den er større -> ignorer denne stien
+
+5. Sti rekonstruksjon
+	- Når du har kommet til mål, konstruer stien baklengs fra mål, til starten, ved å gå til hver node sin mor.
+
+
+#### Kode
+``` c++
+const int STARTRUTE = 208; // definerer hvor i rutenettet vi skal starte fra
+const int USETT = -999; // usette noder / ruter, kan være uansett stort negativt tall
+/**
+ *  Pr�ver effektivt/raskt � finne en kort vei mellom to ruter i et rutenett.
+ *
+ *  @return   Om fant fram fra STARTRUTE til MAALRUTE eller ei
+ *  @see      heuristics(...)
+ */
+ bool Astar() {
+	 int i, // løkkevariabel
+		 nr = STARTRUTE, // startnode
+		 nabo, // naborute til aktuell node
+		 x, y, // Rutenummer omgjort til indeks.
+		 vekt, // Totalvekt fra startnode til nabo
+		 tillegg; // kantvekten fra aktuell node 'nr' til 'nabo'
+
+	gFringe.update(nr, -USETT); // legger startnode på Fringe
+	gTilknytning[nr] = 0; // siden den er startnode har den ingen tilknyttning
+	gKantVekt[nr] = 0; // 0 i totalvekt til noden fra start (siden den er start)
+
+	while (!gFringe.empty()) { // fortstt ubehandlede noder på fringe
+		nr = gFringe.remove(); // henter første på fringen
+		if (nr == MAALRUTE) return true; // har vi nått målet
+		gKantVekt[nr] = -gKantVekt[nr]; // omgår til positiv verdi verdi
+
+		for (i = 1; i <= 8; i++) { // finn nabonoder sitt rutenummer
+			switch (i) {
+				 case 1:  nabo = nr-100; tillegg = 2; break; // Rett opp.
+		         case 2:  nabo = nr-99;  tillegg = 3; break; // P� skr� opp til h�yre.
+		         case 3:  nabo = nr+1;   tillegg = 2; break; // Til h�yre.
+		         case 4:  nabo = nr+101; tillegg = 3; break; // P� skr� ned til h�yre.
+		         case 5:  nabo = nr+100; tillegg = 2; break; // Rett ned.
+		         case 6:  nabo = nr+99;  tillegg = 3; break; // P� skr� ned til vens.
+		         case 7:  nabo = nr-1;   tillegg = 2; break; // Til venstre.
+		         case 8:  nabo = nr-101; tillegg = 3; break; // P� skr� opp til vens.
+			}
+			x = nabo%100; y = nabo/100; // Omgjør til kordinater
+
+			if ((gRutenett[y][x] != 'X') && (gKantVekt[nabo] < 0)) {
+				vekt = gKantVekt[nr]+tillegg;
+
+				if (gFringe.update(nabo, vekt+heuristics(nabo))) {
+					gKantVekt[nabo] = -vekt;
+					gTilknytning[nabo] = nr;
+				}
+			}
+		}
+	}
+	return false; // målrute ikke funnet
+ }
+```
+
+``` c++
+/**
+ *  Beregner "luftlinje-avstanden"
+ *      ( = hypotenusen i en trekant, dvs. Euklidsk avstand) mellom to ruter.
+ *
+ *  @param    nr  -  Rutenummer/-ID
+ *  @return   Beregnet "luftlinje" fra rute 'nr' til MAALRUTE
+ */
+int heuristics(int nr)  {   //  "Luftlinjen" fra 'nr' til 'MAALRUTE'.
+   int dx = ((nr % 100) - (MAALRUTE % 100)),    //  Katet nr.1.
+       dy = ((nr / 100) - (MAALRUTE / 100));    //  Katet nr.2.
+   float luftlinje = sqrt((dx*dx) + (dy*dy));   //  Beregner hypotenusen.
+   return (2*luftlinje);                        //  Dobler, s� lenge kantvekt
+}               
+```
+
+### Union Find
+#### Frammgangsmåte
+
+1. Initialize the Sets
+	- Start with n elements (nodes).
+	- Each element is in its own set, usually represented by a tree where each element is its own root.
+	- You can visualize this as a list of elements, each pointing to themselves.
+
+2. Union Operations
+	- To "union" two elements means to connect their sets.
+	- If they are already in the same set, do nothing. Otherwise, choose one of the sets and link its root to the root of the other set.
+
+3. Find Operations
+	- To "find" an element means to determine which set it belongs to. This is done by following the chain of parents until you reach the root.
+	- The root uniquely identifies the set.
+#### Pseudokode
+``` less
+Function unionerOgFinn(node1, node2, unioner):
+    Set i to node1
+    Set j to node2
+
+    // Find the root of i
+    While gForeldre[i] > 0:
+        Set i to gForeldre[i]
+
+    // Find the root of j
+    While gForeldre[j] > 0:
+        Set j to gForeldre[j]
+
+    // Union operation
+    If unioner and i is not equal to j:
+        Set gForeldre[j] to i
+
+    // Check if i and j are in the same component
+    Return (i equals j)
+
+```
+#### Kode
+``` c++
+bool unionerOgFinn(int nr1, int nr2, const bool unioner) {
+    int i = nr1, j = nr2; // Initialize indices
+
+    // Find the root of i (nr1)
+    while (gForeldre[i] > 0) {
+        i = gForeldre[i];
+    }
+
+    // Find the root of j (nr2)
+    while (gForeldre[j] > 0) {
+        j = gForeldre[j];
+    }
+
+    // Union operation: Attach j's tree to i's tree if they are different
+    if (unioner && (i != j)) {
+        gForeldre[j] = i;
+    }
+
+    // Return true if i and j are in the same component
+    return (i == j);
+}
+```
