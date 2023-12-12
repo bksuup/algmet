@@ -880,6 +880,12 @@ void traverserPostorder (Node* node) {
 ## Sortering
 
 ### Selection Sort
+#### Framgangsmåte
+1. Finn den minste verdien i det usorterte arrayet.
+2. Bytt det med skuff\[0]
+3. Finn den minste verdien i resten av det usorterte arrayet.
+4. gjenta til arrayet er sortert.
+
 #### Algoritme
 1. Finner det minste elementet i resten av arrayen (f.o.m. nr 'i')
 2. Legger det på plass nr 'i'
@@ -909,6 +915,13 @@ void selectionSort (int arr[], const int n) {
 ```
 
 ### Insertion Sort
+#### Framgangsmåte
+1. Start med element i indeks 1
+2. Sammenlign element i forrige indeks
+	1. Hvis indeks\[n+1] er mindre enn indeks\[n] -> flytt den mindre verdien til venstre, helt til den er større enn verdien som ligger i skuffen den sammenlignes med.
+	2. Hvis indeks\[n+1] er større enn indeks\[n] -> la de være
+3. Gå videre til neste element
+
 #### Algoritme
 1. Start i indeks 1 og gå videre ut i arrayet
 2. For hver iterasjon, hent verdien til arr\[i]
@@ -947,6 +960,21 @@ void insertionSort (int arr[], const int n) {
 nb:
 - bruker sentinel key
 - Ikke stabil algoritme
+#### Framgangsmåte
+1. Velg en størrelse 'gap'
+	1. vanligvis brukes n/2 hvor n er antall elementer i arrayet
+
+2. Sorter arrayet for hver størrelse av 'gap'
+	1. For hver verdi av 'gap' -> gjør en insertion sort med elementet som er i indeks: akutuell indeks + gap
+
+3. Reduser størrelsen på 'gap'
+	1. når du har sortert på en størrelse 'gap', reduser størrelsen
+	2. gjør sortering på arrayet med den nye 'gap' størrelsen
+	3. fortsett til 'gap' = 1
+
+4. Insertion sort
+	1. Når du har en 'gap' på 1, kjør en standard insertion-sort på arrayet.
+
 #### Algoritme
 1. Start med en predefinert størrelse 'gap'
 2. Sammenlign element 'n', med element 'n+gap'
@@ -989,6 +1017,19 @@ void shellSort(char arr[], const int n) {
 ### Quicksort
 Prinsipp: Splitt og hersk.
 - Splitt i to, og sorter hver del
+
+#### Framgangsmåte
+1. Velg en 'pivot' (gjerne midten av arrayet -> n/2 hvor n er antall elementer)
+
+2. Partisjoner arrayet
+	1. Plasser en peker på starten av arrayet, og en på slutten
+	2. flytt pekerene mot hverandre, og sammenlign elementene de peker på
+		1. bytt verdiene slik at alle elementer mindre enn pivot -> venstre for pivot, og alle elementer større enn pivot -> høre for pivot.
+	3. når pekerene møtes, plasser elementet i 'pivot' i sin korrekte possisjon i det sorterte arrayet.
+
+3. gjør steg 2 rekursivt til sub-arrayene
+
+4. gjenta til arrayet er sortert.
 #### Algoritme
 1. Velg arr\[hoyre] som et tilfeldig element å sortere ut fra. (partisjonselementet)
 2. Lete fra venstre etter >= verdi, og fra høyre etter <= verdi og så bytte om på disse
@@ -1072,9 +1113,6 @@ void heapSort(unsigned char arr[], int n) {
 	}
 }
 ```
-#### Framgangsmåte
-
-
 ## Hashing
 ### Separate Chaining
 Det brukes en array/vector med Stacker eller LIFO-lister. Når en nøkkel hashes til en indeks
