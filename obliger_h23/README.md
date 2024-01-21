@@ -1,3 +1,3 @@
 # README
 
-Obligene utført av https://github.com/Sofilaxus :)
+Obligene utført av [Sofia](https://github.com/Sofilaxus) :)
