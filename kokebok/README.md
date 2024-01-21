@@ -1,5 +1,5 @@
 # README
 
-algmet_kokebok.md er laget av Bjørn Kristian
+algmet_kokebok.md er laget av [Bjørn Kristian](https://github.com/bksuup)
 
-Algmet_kompendium_2-1.pdf er laget av https://github.com/BenRedic-FyFazan
+Algmet_kompendium_*.pdf er laget av [Karl-Henrik](https://github.com/BenRedic-FyFazan)
