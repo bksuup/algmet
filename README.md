@@ -1,5 +1,6 @@
 # algmet
 Kokebok for IDATG2102 Algoritmiske Metoder
+
 En sammenstilling av repoet finner du i /kokebok, source-filen til PDFene er i OverLeafen til [Karl-Henrik](https://github.com/BenRedic-FyFazan)
 
 Anbefalt å gjøre en fork av repoet og lage kokeboken selv for å forsikre at pensum er up2date :))
